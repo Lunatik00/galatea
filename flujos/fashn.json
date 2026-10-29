@@ -1,0 +1,41 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "_meta": {"title": "Persona"},
+    "inputs": {"image": "persona-cc.jpg"}
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "_meta": {"title": "Prenda"},
+    "inputs": {"image": "prenda-polera-cc.jpg"}
+  },
+  "3": {
+    "class_type": "FashnVtonLoader",
+    "_meta": {"title": "FASHN VTON 1.5 (lee models/fashn-vton)"},
+    "inputs": {"model": "fashn-ai/fashn-vton-1.5"}
+  },
+  "4": {
+    "class_type": "FashnVtonInference",
+    "_meta": {"title": "FASHN VTON: DWPose + parser + MMDiT sin máscara"},
+    "inputs": {
+      "pipeline": ["3", 0],
+      "person_image": ["1", 0],
+      "garment_image": ["2", 0],
+      "garment_photo_type": "flat-lay",
+      "category": "tops",
+      "skip_cfg_last_n_steps": 1,
+      "segmentation_free": true,
+      "steps": 30,
+      "cfg": 1.5,
+      "seed": 42,
+      "keep_model_loaded": true,
+      "pose_source": "internal_dwpose",
+      "parser_backend": "fashn_human_parser"
+    }
+  },
+  "5": {
+    "class_type": "SaveImage",
+    "_meta": {"title": "Guardar"},
+    "inputs": {"images": ["4", 0], "filename_prefix": "galatea"}
+  }
+}

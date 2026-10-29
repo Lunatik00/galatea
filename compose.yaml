@@ -1,0 +1,50 @@
+# ComfyUI con la GPU por CDI (NixOS con hardware.nvidia-container-toolkit.enable = true).
+# Corre como el usuario del host (1000:100) para que Galatea pueda borrar lo que escribe.
+services:
+  comfyui:
+    build:
+      context: ./comfyui
+      args:
+        UID: "1000"
+        GID: "100"
+    # -2: + ComfyUI-FASHN-VTON (2026-09-27).
+    image: galatea-comfyui:0.35.0-2
+    container_name: galatea-comfyui
+    user: "1000:100"
+    ports:
+      - "127.0.0.1:8188:8188"
+    volumes:
+      - ./datos/modelos:/comfy/models
+      - ./datos/comfy/input:/comfy/input
+      - ./datos/comfy/output:/comfy/output
+      - ./datos/comfy/user:/comfy/user
+      - ./datos/comfy/temp:/comfy/temp
+      - ./datos/hf-cache:/home/comfy/.cache/huggingface
+    environment:
+      - HF_HUB_OFFLINE=0
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: cdi
+              device_ids: ["nvidia.com/gpu=all"]
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  # HTTPS en la red local para que el navegador del celular permita la cámara.
+  # caddy:2 (v2.11.4), digest comprobado el 2026-09-27.
+  caddy:
+    image: caddy@sha256:0c994536bddb66445885237f1a5dcc1916bccea922661c76b4e9fc24061f9b52
+    container_name: galatea-caddy
+    # Como el usuario del host, para leer datos/caddy/caddy/pki/authorities/local/root.crt.
+    user: "1000:100"
+    network_mode: host
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./datos/caddy:/data
+    environment:
+      # /config es de root en la imagen; el autoguardado de la configuración va a datos/caddy.
+      - XDG_CONFIG_HOME=/data/config
+      # IP del host en la red local; Caddy la usa en el Caddyfile. Va en .env (fuera de git).
+      - GALATEA_IP=${GALATEA_IP:?define GALATEA_IP en .env con la IP del host en la red local, por ejemplo GALATEA_IP=192.168.0.10}
+    restart: unless-stopped

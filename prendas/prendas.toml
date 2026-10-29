@@ -1,0 +1,10 @@
+# Prendas de la demo. Las imágenes viven en esta carpeta y no entran a git.
+# Para la comprobación de flujo sirven las Creative Commons de scripts/descargar-pruebas.sh:
+#   cp pruebas/imagenes/prenda-polera-cc.jpg prendas/
+# fashn (el flujo por defecto) admite tipo = "superior", "inferior" y "vestido"; leffa,
+# catvton y klein solo "superior": con los otros muestran un aviso y no generan.
+[[prenda]]
+id = "polera-cc"
+nombre = "Polera amarilla (prueba)"
+archivo = "prenda-polera-cc.jpg"
+tipo = "superior"

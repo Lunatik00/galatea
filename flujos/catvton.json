@@ -1,0 +1,54 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "_meta": {"title": "Persona"},
+    "inputs": {"image": "persona-cc.jpg"}
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "_meta": {"title": "Prenda"},
+    "inputs": {"image": "prenda-polera-cc.jpg"}
+  },
+  "3": {
+    "class_type": "segformer_b2_clothes",
+    "_meta": {"title": "Segmentar ropa superior y brazos (quedan en negro)"},
+    "inputs": {
+      "image": ["1", 0],
+      "Face": false, "Hat": false, "Hair": false,
+      "Upper_clothes": true,
+      "Skirt": false, "Pants": false, "Dress": false, "Belt": false,
+      "shoe": false, "leg": false,
+      "arm": true,
+      "Bag": false, "Scarf": false
+    }
+  },
+  "4": {
+    "class_type": "ImageToMask",
+    "_meta": {"title": "Imagen a máscara"},
+    "inputs": {"image": ["3", 0], "channel": "red"}
+  },
+  "5": {
+    "class_type": "InvertMask",
+    "_meta": {"title": "Invertir: ropa superior y brazos en blanco"},
+    "inputs": {"mask": ["4", 0]}
+  },
+  "6": {
+    "class_type": "CatVTONWrapper",
+    "_meta": {"title": "CatVTON"},
+    "inputs": {
+      "image": ["1", 0],
+      "mask": ["5", 0],
+      "refer_image": ["2", 0],
+      "mask_grow": 25,
+      "mixed_precision": "bf16",
+      "seed": 42,
+      "steps": 40,
+      "cfg": 2.5
+    }
+  },
+  "7": {
+    "class_type": "SaveImage",
+    "_meta": {"title": "Guardar"},
+    "inputs": {"images": ["6", 0], "filename_prefix": "galatea"}
+  }
+}

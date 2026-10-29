@@ -1,0 +1,38 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "_meta": {"title": "Persona"},
+    "inputs": {"image": "persona-cc.jpg"}
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "_meta": {"title": "Prenda"},
+    "inputs": {"image": "prenda-polera-cc.jpg"}
+  },
+  "3": {
+    "class_type": "LeffaLoader",
+    "_meta": {"title": "Leffa (VITON-HD, prendas superiores)"},
+    "inputs": {"task": "viton_hd"}
+  },
+  "4": {
+    "class_type": "LeffaTryOn",
+    "_meta": {"title": "Leffa: parsing + openpose + DensePose + difusión"},
+    "inputs": {
+      "pipe": ["3", 0],
+      "person": ["1", 0],
+      "garment": ["2", 0],
+      "garment_type": "upper_body",
+      "steps": 30,
+      "cfg": 2.5,
+      "seed": 42,
+      "ref_acceleration": false,
+      "repaint": true,
+      "restore_size": true
+    }
+  },
+  "5": {
+    "class_type": "SaveImage",
+    "_meta": {"title": "Guardar"},
+    "inputs": {"images": ["4", 0], "filename_prefix": "galatea"}
+  }
+}

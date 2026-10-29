@@ -1,0 +1,11 @@
+[[prenda]]
+id = "roja"
+nombre = "Polera roja"
+archivo = "roja.png"
+tipo = "superior"
+
+[[prenda]]
+id = "azul"
+nombre = "Vestido azul"
+archivo = "azul.png"
+tipo = "vestido"

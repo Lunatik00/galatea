@@ -1,0 +1,454 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Persona"
+    },
+    "inputs": {
+      "image": "persona-cc.jpg"
+    }
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Prenda"
+    },
+    "inputs": {
+      "image": "prenda-polera-cc.jpg"
+    }
+  },
+  "3": {
+    "class_type": "segformer_b2_clothes",
+    "_meta": {
+      "title": "Segmentar ropa superior y brazos (quedan en negro)"
+    },
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ],
+      "Face": false,
+      "Hat": false,
+      "Hair": false,
+      "Upper_clothes": true,
+      "Skirt": false,
+      "Pants": false,
+      "Dress": false,
+      "Belt": false,
+      "shoe": false,
+      "leg": false,
+      "arm": true,
+      "Bag": false,
+      "Scarf": false
+    }
+  },
+  "4": {
+    "class_type": "ImageToMask",
+    "_meta": {
+      "title": "Imagen a máscara"
+    },
+    "inputs": {
+      "image": [
+        "3",
+        0
+      ],
+      "channel": "red"
+    }
+  },
+  "5": {
+    "class_type": "InvertMask",
+    "_meta": {
+      "title": "Invertir: ropa superior y brazos en blanco"
+    },
+    "inputs": {
+      "mask": [
+        "4",
+        0
+      ]
+    }
+  },
+  "6": {
+    "class_type": "GetImageSize",
+    "_meta": {
+      "title": "Tamaño de la persona"
+    },
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ]
+    }
+  },
+  "7": {
+    "class_type": "SolidMask",
+    "_meta": {
+      "title": "Gris 50 %"
+    },
+    "inputs": {
+      "value": 0.5,
+      "width": [
+        "6",
+        0
+      ],
+      "height": [
+        "6",
+        1
+      ]
+    }
+  },
+  "8": {
+    "class_type": "MaskToImage",
+    "_meta": {
+      "title": "Gris a imagen"
+    },
+    "inputs": {
+      "mask": [
+        "7",
+        0
+      ]
+    }
+  },
+  "9": {
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "Persona con la ropa en gris (agnóstica)"
+    },
+    "inputs": {
+      "destination": [
+        "1",
+        0
+      ],
+      "source": [
+        "8",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": [
+        "5",
+        0
+      ]
+    }
+  },
+  "10": {
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "Persona a 1 MP"
+    },
+    "inputs": {
+      "image": [
+        "9",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "megapixels": 1.0,
+      "resolution_steps": 16
+    }
+  },
+  "11": {
+    "class_type": "GetImageSize",
+    "_meta": {
+      "title": "Tamaño de salida"
+    },
+    "inputs": {
+      "image": [
+        "10",
+        0
+      ]
+    }
+  },
+  "12": {
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "Prenda a 1 MP"
+    },
+    "inputs": {
+      "image": [
+        "2",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "megapixels": 1.0,
+      "resolution_steps": 16
+    }
+  },
+  "13": {
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "FLUX.2 klein 4B"
+    },
+    "inputs": {
+      "unet_name": "flux-2-klein-4b.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "14": {
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "LoRA de try-on"
+    },
+    "inputs": {
+      "model": [
+        "13",
+        0
+      ],
+      "lora_name": "tryon-klein-4b.safetensors",
+      "strength_model": 1.0
+    }
+  },
+  "15": {
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Qwen3 4B"
+    },
+    "inputs": {
+      "clip_name": "qwen_3_4b.safetensors",
+      "type": "flux2"
+    }
+  },
+  "16": {
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "VAE FLUX.2"
+    },
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    }
+  },
+  "17": {
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Prompt disparador del LoRA"
+    },
+    "inputs": {
+      "text": "TRYON a full-body photo of a person. Replace the outfit with the top and bottom as shown in the reference images. The final image is a full body shot.",
+      "clip": [
+        "15",
+        0
+      ]
+    }
+  },
+  "18": {
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "Latente persona"
+    },
+    "inputs": {
+      "pixels": [
+        "10",
+        0
+      ],
+      "vae": [
+        "16",
+        0
+      ]
+    }
+  },
+  "19": {
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "Latente prenda"
+    },
+    "inputs": {
+      "pixels": [
+        "12",
+        0
+      ],
+      "vae": [
+        "16",
+        0
+      ]
+    }
+  },
+  "20": {
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "Referencia 1: persona"
+    },
+    "inputs": {
+      "conditioning": [
+        "17",
+        0
+      ],
+      "latent": [
+        "18",
+        0
+      ]
+    }
+  },
+  "21": {
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "Referencia 2: top = prenda"
+    },
+    "inputs": {
+      "conditioning": [
+        "20",
+        0
+      ],
+      "latent": [
+        "19",
+        0
+      ]
+    }
+  },
+  "22": {
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "Referencia 3: bottom = la misma prenda"
+    },
+    "inputs": {
+      "conditioning": [
+        "21",
+        0
+      ],
+      "latent": [
+        "19",
+        0
+      ]
+    }
+  },
+  "23": {
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Negativo vacío"
+    },
+    "inputs": {
+      "conditioning": [
+        "17",
+        0
+      ]
+    }
+  },
+  "24": {
+    "class_type": "CFGGuider",
+    "_meta": {
+      "title": "CFG 1 (klein destilado)"
+    },
+    "inputs": {
+      "model": [
+        "14",
+        0
+      ],
+      "positive": [
+        "22",
+        0
+      ],
+      "negative": [
+        "23",
+        0
+      ],
+      "cfg": 1.0
+    }
+  },
+  "25": {
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "Euler"
+    },
+    "inputs": {
+      "sampler_name": "euler"
+    }
+  },
+  "26": {
+    "class_type": "Flux2Scheduler",
+    "_meta": {
+      "title": "4 pasos"
+    },
+    "inputs": {
+      "steps": 4,
+      "width": [
+        "11",
+        0
+      ],
+      "height": [
+        "11",
+        1
+      ]
+    }
+  },
+  "27": {
+    "class_type": "EmptyFlux2LatentImage",
+    "_meta": {
+      "title": "Latente vacío"
+    },
+    "inputs": {
+      "width": [
+        "11",
+        0
+      ],
+      "height": [
+        "11",
+        1
+      ],
+      "batch_size": 1
+    }
+  },
+  "28": {
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "Semilla"
+    },
+    "inputs": {
+      "noise_seed": 42
+    }
+  },
+  "29": {
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "Muestreo"
+    },
+    "inputs": {
+      "noise": [
+        "28",
+        0
+      ],
+      "guider": [
+        "24",
+        0
+      ],
+      "sampler": [
+        "25",
+        0
+      ],
+      "sigmas": [
+        "26",
+        0
+      ],
+      "latent_image": [
+        "27",
+        0
+      ]
+    }
+  },
+  "30": {
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "Decodificar"
+    },
+    "inputs": {
+      "samples": [
+        "29",
+        0
+      ],
+      "vae": [
+        "16",
+        0
+      ]
+    }
+  },
+  "31": {
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Guardar"
+    },
+    "inputs": {
+      "images": [
+        "30",
+        0
+      ],
+      "filename_prefix": "galatea"
+    }
+  }
+}

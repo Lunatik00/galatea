@@ -1,0 +1,23 @@
+[[flujo]]
+nombre = "fijo"
+titulo = "Fijo (sin GPU)"
+descripcion = "Imágenes pregeneradas."
+espera_segundos = 0
+
+[[flujo]]
+nombre = "prueba"
+titulo = "Flujo de prueba"
+descripcion = "Grafo mínimo para probar el relleno y el cliente de ComfyUI."
+archivo = "prueba.json"
+nodo_persona = "1"
+nodo_prenda = "2"
+nodo_tipo = "3"
+nodo_salida = "4"
+# Como leffa: el motor encuadra la foto a 3:4 y recorta el resultado.
+encuadre = "3:4"
+tipos = ["superior", "inferior", "vestido"]
+
+[[flujo.peso]]
+url = "https://example.invalid/peso.safetensors"
+destino = "prueba/peso.safetensors"
+sha256 = ""

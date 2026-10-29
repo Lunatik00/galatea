@@ -1,0 +1,43 @@
+{
+	# Los navegadores omiten SNI con una IP literal; sin esto el celular recibe un error TLS.
+	default_sni {$GALATEA_IP}
+	# El :80 del host está ocupado; la redirección a HTTPS la hace el bloque :8091.
+	auto_https disable_redirects
+	# Con network_mode: host, la API de administración quedaría abierta a todo el host.
+	admin off
+	# Corre como 1000:100 dentro de un contenedor: no hay almacén de confianza que tocar.
+	skip_install_trust
+}
+
+https://{$GALATEA_IP}:8444 {
+	bind {$GALATEA_IP}
+	tls internal
+	# Solo desde la propia página o desde la app (origen interno de Capacitor): nada de
+	# otras webs embebiendo el probador. La app es «cross-site» por diseño; la API Rust
+	# aplica CORS (GALATEA_ORIGENES) para ese origen, también en el preflight OPTIONS.
+	@ajena {
+		header Sec-Fetch-Site cross-site
+		not header Origin https://localhost
+	}
+	handle @ajena {
+		respond 403
+	}
+	reverse_proxy 127.0.0.1:8766 {
+		# El SSE no debe pasar por búfer.
+		flush_interval -1
+	}
+}
+
+:8091 {
+	bind {$GALATEA_IP}
+	handle /caddy-root.crt {
+		root * /data/caddy/pki/authorities/local
+		rewrite * /root.crt
+		# Android solo ofrece instalarlo como CA si llega con este tipo.
+		header Content-Type application/x-x509-ca-cert
+		file_server
+	}
+	handle {
+		redir https://{$GALATEA_IP}:8444{uri}
+	}
+}

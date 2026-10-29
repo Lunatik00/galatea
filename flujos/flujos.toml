@@ -1,0 +1,247 @@
+# Cada flujo es un motor. Los identificadores de nodo son los del JSON en formato API.
+# Ver docs/superpowers/specs/2026-09-26-galatea-demo-design.md §6.
+
+[[flujo]]
+nombre = "fijo"
+titulo = "Fijo (sin GPU)"
+descripcion = "Devuelve una imagen pregenerada de flujos/fijo/. Para ensayar la demo y para las pruebas."
+espera_segundos = 8
+
+[[flujo]]
+nombre = "catvton"
+titulo = "CatVTON"
+descripcion = "SD1.5 inpainting, < 8 GB de VRAM. Licencias: CC BY-NC-SA 4.0 (pesos CatVTON), CreativeML OpenRAIL-M (UNet de SD 1.5 inpainting) y NVIDIA SegFormer (máscara): solo demo, no comercial."
+archivo = "catvton.json"
+nodo_persona = "1"
+nodo_prenda = "2"
+nodo_salida = "7"
+tipos = ["superior"]
+# nodo_tipo se omite: la máscara la decide el nodo segformer (id 3: ropa superior y brazos);
+# cuando el flujo admita inferior/vestido, apunta nodo_tipo al nodo cuyo campo elige la
+# clase y define valores_tipo.
+
+# Pesos que leen los nodos desde /comfy/models (= datos/modelos). Los lee
+# scripts/descargar-modelos.sh.
+#  - CatVTON Wrapper: models/CatVTON/{mix-48k-1024/attention, stable-diffusion-inpainting
+#    (solo scheduler y unet), sd-vae-ft-mse}.
+#  - Comfyui_segformer_b2_clothes carga al importarse models/segformer_b2_clothes y
+#    models/segformer_b3_fashion; sin los dos, el paquete entero no importa.
+
+[[flujo.peso]]
+url = "https://huggingface.co/zhengchong/CatVTON/resolve/main/mix-48k-1024/attention/model.safetensors"
+destino = "CatVTON/mix-48k-1024/attention/model.safetensors"
+sha256 = "a1fc093f1b6744623079e6f4e7313411f524e388c4b7467df1e0e7f577cba23a"
+
+[[flujo.peso]]
+url = "https://huggingface.co/booksforcharlie/stable-diffusion-inpainting/resolve/main/scheduler/scheduler_config.json"
+destino = "CatVTON/stable-diffusion-inpainting/scheduler/scheduler_config.json"
+sha256 = "8b457848b74deeeab2a967b75048dd2cb6f393cfc17751eca1b5ec655cff0183"
+
+[[flujo.peso]]
+url = "https://huggingface.co/booksforcharlie/stable-diffusion-inpainting/resolve/main/unet/config.json"
+destino = "CatVTON/stable-diffusion-inpainting/unet/config.json"
+sha256 = "669f6581087fac5b16c44e42c58b359a35eadf2af5691d7945480bd7ceac8e6d"
+
+[[flujo.peso]]
+url = "https://huggingface.co/booksforcharlie/stable-diffusion-inpainting/resolve/main/unet/diffusion_pytorch_model.bin"
+destino = "CatVTON/stable-diffusion-inpainting/unet/diffusion_pytorch_model.bin"
+sha256 = "af4e22eecaca7a1c5dd849f51924effdccc1f765141e898c323b775cc80a43b3"
+
+[[flujo.peso]]
+url = "https://huggingface.co/stabilityai/sd-vae-ft-mse/resolve/main/config.json"
+destino = "CatVTON/sd-vae-ft-mse/config.json"
+sha256 = "92d3dfb746fca211a2c9e019e285f8597412211728dce3c5bcf4eda0f2d62e7e"
+
+[[flujo.peso]]
+url = "https://huggingface.co/stabilityai/sd-vae-ft-mse/resolve/main/diffusion_pytorch_model.safetensors"
+destino = "CatVTON/sd-vae-ft-mse/diffusion_pytorch_model.safetensors"
+sha256 = "a1d993488569e928462932c8c38a0760b874d166399b14414135bd9c42df5815"
+
+[[flujo.peso]]
+url = "https://huggingface.co/mattmdjaga/segformer_b2_clothes/resolve/main/config.json"
+destino = "segformer_b2_clothes/config.json"
+sha256 = "4b5127ca00fe61187b6cc6c232c9e19326ed228683f8f5c221790be9cc196a6e"
+
+[[flujo.peso]]
+url = "https://huggingface.co/mattmdjaga/segformer_b2_clothes/resolve/main/preprocessor_config.json"
+destino = "segformer_b2_clothes/preprocessor_config.json"
+sha256 = "a608e3a47dcfba8dc052a766babb4b6c963285ab4f176bc6c1eb2b257fd3ad93"
+
+[[flujo.peso]]
+url = "https://huggingface.co/mattmdjaga/segformer_b2_clothes/resolve/main/model.safetensors"
+destino = "segformer_b2_clothes/model.safetensors"
+sha256 = "8f86fd90c567afd4370b3cc3a7e81ed767a632b2832a738331af660acc0c4c68"
+
+[[flujo.peso]]
+url = "https://huggingface.co/sayeed99/segformer-b3-fashion/resolve/main/config.json"
+destino = "segformer_b3_fashion/config.json"
+sha256 = "06430c74add6f239c0d54c6c18f488eaa6dc50cc90a0b95f2d28811c3bedb222"
+
+[[flujo.peso]]
+url = "https://huggingface.co/sayeed99/segformer-b3-fashion/resolve/main/preprocessor_config.json"
+destino = "segformer_b3_fashion/preprocessor_config.json"
+sha256 = "6073ac6a37530ed2a19443d6a748f5579887b3ae48f6730073954b0b38cf3fd6"
+
+[[flujo.peso]]
+url = "https://huggingface.co/sayeed99/segformer-b3-fashion/resolve/main/model.safetensors"
+destino = "segformer_b3_fashion/model.safetensors"
+sha256 = "f3f5b30179f1480d329224d089f6d286580142c2b12846d08de814a48a81f42f"
+
+[[flujo]]
+nombre = "leffa"
+titulo = "Leffa"
+descripcion = "Leffa VITON-HD (SD1.5 inpainting con atención de flujo), máscara y DensePose propias del nodo; repaint: conserva cara, pelo y el resto de la ropa; solo cambia la prenda. Licencia MIT (pesos franciszzj/Leffa y nodo ComfyUI-Leffa): candidato a producto."
+archivo = "leffa.json"
+nodo_persona = "1"
+nodo_prenda = "2"
+nodo_tipo = "4"
+campo_tipo = "garment_type"
+nodo_salida = "5"
+# LeffaTryOn mete la foto en 768×1024 con relleno blanco y, con restore_size, estira ese
+# marco rellenado al tamaño original: una foto 9:16 sale ~25 % más flaca y con franjas.
+# Con encuadre = "3:4" Galatea le manda la foto ya a 3:4 y recorta el resultado de vuelta.
+# Los otros flujos no lo piden: klein conserva la proporción de la foto (~1 MP) y CatVTON
+# devolvió bien una foto 9:16; rellenarlos solo gastaría píxeles en franjas.
+encuadre = "3:4"
+# 2026-09-27: repaint = true. Con repaint = false la primera prueba real desde la página
+# devolvió otra cara, otro pelo, otros pantalones y otros zapatos: el nodo entrega la imagen
+# entera regenerada. Con repaint el nodo pega de vuelta la foto fuera de la máscara de la
+# prenda (leffa/pipeline.py, do_repaint), todo dentro del marco 768×1024.
+# viton_hd está entrenado con VITON-HD (solo prendas superiores). Para inferior y vestido
+# habría que cambiar el nodo 3 a viton_dc y bajar virtual_tryon_dc.pth (7.2 GB).
+tipos = ["superior"]
+valores_tipo = { superior = "upper_body", inferior = "lower_body", vestido = "dresses" }
+
+# Solo el subconjunto de franciszzj/Leffa que lee la tarea viton_hd (8.7 GB medidos con du -sb, de 36.8 GB):
+# ComfyUI-Leffa busca todo bajo models/Leffa. pose_transfer.pth (21 GB) y
+# virtual_tryon_dc.pth no hacen falta.
+
+[[flujo.peso]]
+url = "https://huggingface.co/franciszzj/Leffa/resolve/main/virtual_tryon.pth"
+destino = "Leffa/virtual_tryon.pth"
+sha256 = "f4d4b31dafac19ec5cc4ccbe307d4eb61b76a52f98aaef78fc02b4405c406351"
+
+[[flujo.peso]]
+url = "https://huggingface.co/franciszzj/Leffa/resolve/main/stable-diffusion-inpainting/scheduler/scheduler_config.json"
+destino = "Leffa/stable-diffusion-inpainting/scheduler/scheduler_config.json"
+sha256 = "8b457848b74deeeab2a967b75048dd2cb6f393cfc17751eca1b5ec655cff0183"
+
+[[flujo.peso]]
+url = "https://huggingface.co/franciszzj/Leffa/resolve/main/stable-diffusion-inpainting/unet/config.json"
+destino = "Leffa/stable-diffusion-inpainting/unet/config.json"
+sha256 = "669f6581087fac5b16c44e42c58b359a35eadf2af5691d7945480bd7ceac8e6d"
+
+[[flujo.peso]]
+url = "https://huggingface.co/franciszzj/Leffa/resolve/main/stable-diffusion-inpainting/vae/config.json"
+destino = "Leffa/stable-diffusion-inpainting/vae/config.json"
+sha256 = "4cd0ce4803567837175fbb8412689fe77d069c1ef8171beb83979db309a8bad5"
+
+[[flujo.peso]]
+url = "https://huggingface.co/franciszzj/Leffa/resolve/main/densepose/Base-DensePose-RCNN-FPN.yaml"
+destino = "Leffa/densepose/Base-DensePose-RCNN-FPN.yaml"
+sha256 = "277dd3823c47b330a9dd3e272eba28e1680d36eba163170d7f5b6d727f145033"
+
+[[flujo.peso]]
+url = "https://huggingface.co/franciszzj/Leffa/resolve/main/densepose/densepose_rcnn_R_50_FPN_s1x.yaml"
+destino = "Leffa/densepose/densepose_rcnn_R_50_FPN_s1x.yaml"
+sha256 = "68c83ba2e86f4b857ff5953ac96c7d607fa7bc7b2277b6def7e6c6d21ddb07ef"
+
+[[flujo.peso]]
+url = "https://huggingface.co/franciszzj/Leffa/resolve/main/densepose/model_final_162be9.pkl"
+destino = "Leffa/densepose/model_final_162be9.pkl"
+sha256 = "b8a7382001b16e453bad95ca9dbc68ae8f2b839b304cf90eaf5c27fbdb4dae91"
+
+[[flujo.peso]]
+url = "https://huggingface.co/franciszzj/Leffa/resolve/main/humanparsing/parsing_atr.onnx"
+destino = "Leffa/humanparsing/parsing_atr.onnx"
+sha256 = "04c7d1d070d0e0ae943d86b18cb5aaaea9e278d97462e9cfb270cbbe4cd977f4"
+
+[[flujo.peso]]
+url = "https://huggingface.co/franciszzj/Leffa/resolve/main/humanparsing/parsing_lip.onnx"
+destino = "Leffa/humanparsing/parsing_lip.onnx"
+sha256 = "8436e1dae96e2601c373d1ace29c8f0978b16357d9038c17a8ba756cca376dbc"
+
+[[flujo.peso]]
+url = "https://huggingface.co/franciszzj/Leffa/resolve/main/openpose/body_pose_model.pth"
+destino = "Leffa/openpose/body_pose_model.pth"
+sha256 = "25a948c16078b0f08e236bda51a385d855ef4c153598947c28c0d47ed94bb746"
+
+[[flujo.peso]]
+url = "https://huggingface.co/franciszzj/Leffa/resolve/main/schp/exp-schp-201908301523-atr.pth"
+destino = "Leffa/schp/exp-schp-201908301523-atr.pth"
+sha256 = "e9d7c91ce3b4e7133df56b599fc817b533e3439c5e8d282a59126d2fda339a2a"
+
+[[flujo.peso]]
+url = "https://huggingface.co/franciszzj/Leffa/resolve/main/schp/exp-schp-201908261155-lip.pth"
+destino = "Leffa/schp/exp-schp-201908261155-lip.pth"
+sha256 = "24fa3254ceeb74c8435458994a64b522fb439a3635b7b86ff470457e0413da00"
+
+[[flujo]]
+nombre = "klein"
+titulo = "FLUX.2 klein 4B + LoRA try-on"
+descripcion = "FLUX.2 klein 4B (destilado, 4 pasos) con el LoRA xocialize/tryon-FLUX.2-klein-4B-lora; persona con la ropa superior en gris (segformer) y la prenda como top y bottom. Licencia Apache 2.0 (klein, LoRA, Qwen3) y NVIDIA SegFormer (máscara, no comercial: habría que cambiarla antes de cobrar)."
+archivo = "klein.json"
+nodo_persona = "1"
+nodo_prenda = "2"
+nodo_salida = "31"
+tipos = ["superior"]
+# Sin nodo_tipo: la máscara gris la decide el nodo segformer (id 3) y el LoRA recibe la
+# misma prenda como top y bottom (ids 21 y 22). Todo lo demás se arma dentro del grafo:
+# no hace falta ningún campo nuevo en flujos.toml.
+
+[[flujo.peso]]
+url = "https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-4b/resolve/main/split_files/diffusion_models/flux-2-klein-4b.safetensors"
+destino = "diffusion_models/flux-2-klein-4b.safetensors"
+sha256 = "ec3d4e733a771f61c052fb4856c48b336c55eaf2c65487c2a1faeb9bbda7a343"
+
+[[flujo.peso]]
+url = "https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-4b/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors"
+destino = "text_encoders/qwen_3_4b.safetensors"
+sha256 = "6c671498573ac2f7a5501502ccce8d2b08ea6ca2f661c458e708f36b36edfc5a"
+
+[[flujo.peso]]
+url = "https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-4b/resolve/main/split_files/vae/flux2-vae.safetensors"
+destino = "vae/flux2-vae.safetensors"
+sha256 = "868fe7b343cc8f3a19dbcfcafbc3d5f888802be3f89bd81b65b3621a066ce8f3"
+
+[[flujo.peso]]
+url = "https://huggingface.co/xocialize/tryon-FLUX.2-klein-4B-lora/resolve/main/tryon-klein-4b.safetensors"
+destino = "loras/tryon-klein-4b.safetensors"
+sha256 = "e251c836b4792910cb322317f58a91063f73bef7255031912886af840dc7dd43"
+
+[[flujo]]
+nombre = "fashn"
+titulo = "FASHN VTON 1.5"
+descripcion = "FASHN VTON v1.5: MMDiT de 972M parámetros en espacio de píxeles, sin máscara (segmentation_free), pose por DWPose. Licencia Apache-2.0 (pesos fashn-ai/fashn-vton-1.5 y fashn-ai/DWPose, nodo ComfyUI-FASHN-VTON): candidato a producto. Ojo: el parser humano que el nodo corre siempre (fashn-ai/fashn-human-parser, SegFormer-B4) va con la licencia NVIDIA SegFormer, no comercial: habría que cambiarlo antes de cobrar."
+archivo = "fashn.json"
+nodo_persona = "1"
+nodo_prenda = "2"
+nodo_tipo = "4"
+campo_tipo = "category"
+nodo_salida = "5"
+tipos = ["superior", "inferior", "vestido"]
+valores_tipo = { superior = "tops", inferior = "bottoms", vestido = "one-pieces" }
+# Medido el 2026-09-27 en la RTX 3090 con la foto CC 1280×1735: 65 s la primera vez (carga
+# modelo, parser y DWPose), 18 s en caliente de punta a punta por la API de Galatea; VRAM
+# ~3.5 GB propios (5.9 GB totales con el resto). El modelo trabaja a 576×864 y devuelve esa
+# escala (576×781 para una foto 3:4 sin relleno): la salida es más pequeña que la foto.
+espera_segundos = 25
+
+# 2.29 GB (1943668048 + 216746733 + 134399116 bytes). ComfyUI-FASHN-VTON lee todo bajo models/fashn-vton (lo baja solo si falta; aquí se deja
+# puesto para no depender de la red en la demo). El parser humano no va aquí: lo carga
+# transformers desde la caché de Hugging Face (datos/hf-cache), ver README.
+
+[[flujo.peso]]
+url = "https://huggingface.co/fashn-ai/fashn-vton-1.5/resolve/main/model.safetensors"
+destino = "fashn-vton/model.safetensors"
+sha256 = "d6cd38286885bc29fa487ea9383f80ffeb95862e7747c630d42c5d3c05bdd35a"
+
+[[flujo.peso]]
+url = "https://huggingface.co/fashn-ai/DWPose/resolve/main/yolox_l.onnx"
+destino = "fashn-vton/dwpose/yolox_l.onnx"
+sha256 = "7860ae79de6c89a3c1eb72ae9a2756c0ccfbe04b7791bb5880afabd97855a411"
+
+[[flujo.peso]]
+url = "https://huggingface.co/fashn-ai/DWPose/resolve/main/dw-ll_ucoco_384.onnx"
+destino = "fashn-vton/dwpose/dw-ll_ucoco_384.onnx"
+sha256 = "724f4ff2439ed61afb86fb8a1951ec39c6220682803b4a8bd4f598cd913b1843"

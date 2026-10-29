@@ -1,0 +1,35 @@
+# Paquetes que piden los nodos personalizados, fijados a la versión exacta que resolvió
+# pip en la primera construcción (pip freeze, 2026-09-26).
+# ComfyUI_CatVTON_Wrapper pide numpy<2.0 y pillow<10.0.0; no se respeta: ComfyUI v0.35.0
+# y Python 3.12 necesitan versiones nuevas, y el nodo corre con ellas (ver experimento/).
+# Comfyui_segformer_b2_clothes pide transformers==4.33.2; ComfyUI pide >=4.50.3 y el nodo
+# funciona con la 5.x.
+diffusers==0.40.0
+accelerate==1.15.0
+transformers==5.17.0
+huggingface_hub==1.33.0
+scipy==1.18.1
+# ComfyUI-Leffa (2026-09-27). Su requirements.txt pide regex==2024.5.15; no se respeta
+# (restricciones-pip.txt fija la 2026.9.10 que ya usa transformers) y el nodo importa igual.
+# Los detectron2/densepose que trae van por torchvision.ops: no se compila nada.
+peft==0.21.0
+fvcore==0.1.5.post20221221
+omegaconf==2.3.1
+cloudpickle==3.1.2
+pycocotools==2.0.11
+termcolor==3.3.0
+tabulate==0.10.0
+onnx==1.23.0
+onnxruntime==1.30.0
+opencv-python-headless==5.0.0.93
+scikit-image==0.26.0
+timm==1.0.30
+matplotlib==3.11.2
+imageio==2.37.4
+# ComfyUI-FASHN-VTON (2026-09-27). Su requirements.txt pide, además de lo que ya está
+# arriba o en ComfyUI, fashn-human-parser, opencv-python y onnxruntime-gpu:
+#  - fashn-human-parser==0.1.1 se instala aparte con --no-deps en el Dockerfile: pide
+#    opencv-python, que pisaría el cv2 de opencv-python-headless.
+#  - onnxruntime-gpu no se instala: comparte el módulo onnxruntime con el onnxruntime de
+#    ComfyUI-Leffa, y la 1.30 está hecha para CUDA 13 (la imagen es CUDA 12.6). DWPose
+#    pide CUDAExecutionProvider y onnxruntime cae a CPU con un aviso (ver experimento/).

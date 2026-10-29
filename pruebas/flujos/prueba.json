@@ -1,0 +1,6 @@
+{
+  "1": { "class_type": "LoadImage", "inputs": { "image": "PERSONA.jpg", "upload": "image" } },
+  "2": { "class_type": "LoadImage", "inputs": { "image": "PRENDA.jpg", "upload": "image" } },
+  "3": { "class_type": "TryOnFalso", "inputs": { "image": ["1", 0], "refer_image": ["2", 0], "cloth_type": "upper", "steps": 2 } },
+  "4": { "class_type": "SaveImage", "inputs": { "images": ["3", 0], "filename_prefix": "galatea" } }
+}

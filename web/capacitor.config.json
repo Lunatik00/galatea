@@ -1,0 +1,8 @@
+{
+  "appId": "cl.galatea.probador",
+  "appName": "Probador Galatea",
+  "webDir": "dist",
+  "android": {
+    "webContentsDebuggingEnabled": true
+  }
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- La CA raíz de Caddy (LAN) viaja dentro del APK: nadie la instala en el teléfono.
+     scripts/apk.sh copia datos/caddy/caddy/pki/authorities/local/root.crt a res/raw/caddy_root.crt. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="@raw/caddy_root" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

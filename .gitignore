@@ -1,0 +1,21 @@
+target/
+result*
+.direnv/
+datos/
+prendas/*
+!prendas/prendas.toml
+experimento/*
+!experimento/*.md
+# Capturas del emulador: sin personas (aviso y lista de prendas).
+!experimento/2026-09-27-apk-*.png
+node_modules/
+test-results/
+playwright-report/
+.superpowers/
+.env
+pruebas/imagenes/*.jpg
+!pruebas/imagenes/persona-prueba.jpg
+web/dist/
+web/node_modules/
+web/android/app/src/main/res/raw/caddy_root.crt
+.worktrees/
